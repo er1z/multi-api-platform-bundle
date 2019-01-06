@@ -79,4 +79,5 @@ multi_api_platform:
     enabled: true
     request_param: x-api-select
     set_cookie: true
+    request_order: ['request', 'query', 'attributes', 'cookies', 'headers', 'server']
 ```  
