@@ -55,7 +55,7 @@ class Configuration implements ConfigurationInterface
                             ->prototype('scalar')->end()
                             ->defaultValue(['query', 'request', 'cookies', 'headers', 'attributes', 'server'])
                             ->validate()
-                                ->ifNotInArray(['request', 'query', 'attributes', 'cookies'])
+                                ->ifNotInArray(['request', 'query', 'attributes', 'cookies', 'headers', 'server'])
                                 ->thenInvalid('there is no such request property')
                             ->end()
                         ->end()
