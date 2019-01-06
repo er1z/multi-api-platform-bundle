@@ -1,0 +1,19 @@
+{
+    "name": "er1z/multi-api-platform-bundle",
+    "description": "Provides an ability to create more than one API in single app",
+    "require": {
+        "api-platform/api-pack": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Er1z\\MultiApiPlatform\\": "src/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Przemysław eRIZ Pawliczuk",
+            "email": "przemyslaw.pawliczuk@h2p.pl"
+        }
+    ]
+}

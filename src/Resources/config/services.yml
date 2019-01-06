@@ -1,0 +1,43 @@
+services:
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    bind:
+      $apis: '%multi_api_platform.apis%'
+      $isDebug: '%kernel.debug%'
+      $expressionLanguage: '@my_expression_language'
+
+  _instanceof:
+    # services whose classes are instances of CustomInterface will be tagged automatically
+    Er1z\MultiApiPlatform\ClassDiscriminator\StageInterface:
+      tags: ['multi_api_platform.execution_context']
+
+  Er1z\MultiApiPlatform\:
+    resource: '../../*'
+    exclude: '../../{DependencyInjection,MultiApiPlatformBundle.php}'
+
+  Er1z\MultiApiPlatform\RouteLoader:
+    decorates: api_platform.route_loader
+
+  Er1z\MultiApiPlatform\Command\SwaggerCommand:
+    arguments:
+      - '@api_platform.swagger.command.swagger_command'
+    tags:
+      - 'console.command'
+
+  Er1z\MultiApiPlatform\EventSubscriber\DebugRequestSnifferListener:
+    arguments:
+      - '%multi_api_platform.debug_http_listener%'
+
+  my_expression_language:
+    class: Symfony\Component\ExpressionLanguage\ExpressionLanguage
+
+  Er1z\MultiApiPlatform\ClassDiscriminator:
+    arguments:
+      - '%multi_api_platform.apis%'
+      - !tagged multi_api_platform.execution_context
+
+  # todo: probably it need to be privatized
+
+  Er1z\MultiApiPlatform\ApiPlatform\ResourceNameCollectionFactoryDecorator:
+    decorates: api_platform.metadata.resource.name_collection_factory.cached
