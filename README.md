@@ -1,7 +1,7 @@
 Multi-API-Platform
 --
 
-This Symfony's bundle is a solution to problem for having more than one API in single application. For example, you have
+This Symfony's bundle is a solution to problem for having more than one API in single [API Platform](https://api-platform.com) instance. For example, you have
 an application's back-end that exposes resources for end-clients and you want to create an entrypoint for internal
 microservices.
 
