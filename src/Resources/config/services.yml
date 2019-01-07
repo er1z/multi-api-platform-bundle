@@ -1,43 +1,56 @@
 services:
-  _defaults:
-    autowire: true      # Automatically injects dependencies in your services.
-    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-    bind:
-      $apis: '%multi_api_platform.apis%'
-      $isDebug: '%kernel.debug%'
-      $expressionLanguage: '@my_expression_language'
-
   _instanceof:
-    # services whose classes are instances of CustomInterface will be tagged automatically
     Er1z\MultiApiPlatform\ClassDiscriminator\StageInterface:
       tags: ['multi_api_platform.execution_context']
 
-  Er1z\MultiApiPlatform\:
-    resource: '../../*'
-    exclude: '../../{DependencyInjection,MultiApiPlatformBundle.php}'
-
-  Er1z\MultiApiPlatform\RouteLoader:
+  multi_api_platform.route_loader:
+    class: Er1z\MultiApiPlatform\RouteLoader
     decorates: api_platform.route_loader
 
-  Er1z\MultiApiPlatform\Command\SwaggerCommand:
+  multi_api_platform.command.swagger_command:
+    class: Er1z\MultiApiPlatform\Command\SwaggerCommand
     arguments:
       - '@api_platform.swagger.command.swagger_command'
+      - '@multi_api_platform.class_discriminator.cli_stage'
+      - '%multi_api_platform.apis%'
     tags:
       - 'console.command'
 
-  Er1z\MultiApiPlatform\EventSubscriber\DebugRequestSnifferListener:
+  multi_api_platform.event_subscriber.debug_request_sniffer_listener:
+    class: Er1z\MultiApiPlatform\EventSubscriber\DebugRequestSnifferListener
     arguments:
       - '%multi_api_platform.debug_http_listener%'
 
-  my_expression_language:
+  multi_api_platform.expression_language:
     class: Symfony\Component\ExpressionLanguage\ExpressionLanguage
 
-  Er1z\MultiApiPlatform\ClassDiscriminator:
+  multi_api_platform.class_discriminator:
+    class: Er1z\MultiApiPlatform\ClassDiscriminator
     arguments:
       - '%multi_api_platform.apis%'
       - !tagged multi_api_platform.execution_context
 
-  # todo: probably it need to be privatized
-
-  Er1z\MultiApiPlatform\ApiPlatform\ResourceNameCollectionFactoryDecorator:
+  multi_api_platform.api_platform.resource_name_collection_factory_decorator:
+    class: Er1z\MultiApiPlatform\ApiPlatform\ResourceNameCollectionFactoryDecorator
     decorates: api_platform.metadata.resource.name_collection_factory.cached
+    arguments:
+      - '@api_platform.metadata.resource.name_collection_factory.cached.inner'
+      - '@multi_api_platform.class_discriminator'
+
+  multi_api_platform.class_discriminator.cache_warmup_stage:
+    class: Er1z\MultiApiPlatform\ClassDiscriminator\CacheWarmupStage
+    tags:
+      - multi_api_platform.execution_context
+
+  multi_api_platform.class_discriminator.cli_stage:
+    class: Er1z\MultiApiPlatform\ClassDiscriminator\CliStage
+    arguments:
+      - '@multi_api_platform.class_discriminator'
+      - '%multi_api_platform.apis%'
+    tags:
+      - multi_api_platform.execution_context
+
+  multi_api_platform.class_discriminator.request_stage:
+    class: Er1z\MultiApiPlatform\ClassDiscriminator\RequestStage
+    tags:
+      - multi_api_platform.execution_context
